@@ -1,5 +1,6 @@
 package com.android.mytodolist;
 
+import android.annotation.SuppressLint;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -12,10 +13,9 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-
 import com.android.todolist.R;
 
-public class Main extends ListActivity {
+public class ScheduleListActivity extends ListActivity {
 
 	private Button add;
 	private DBHelper helper;
@@ -34,15 +34,14 @@ public class Main extends ListActivity {
 		startManagingCursor(cursor);
 
 		// the desired columns to be bound
-		columns = new String[] { NoteEntry.COLUMN_NAME_ENTRY_ID,
-				NoteEntry.COLUMN_NAME_TITLE };
+		columns = new String[] { ScheduleEntry.COLUMN_NAME_ENTRY_ID,
+				ScheduleEntry.COLUMN_NAME_TITLE };
 		// the XML defined views which the data will be bound to
-		to = new int[] { R.id.id, R.id.title };
+		to = new int[] { R.id.id, R.id.title, R.id.description, R.id.dateText };
 
 		// create the adapter using the cursor pointing to the desired data as
 		// well as the layout information
-		mAdapter = new SimpleCursorAdapter(this, R.layout.row, cursor, columns,
-				to);
+		mAdapter = new SimpleCursorAdapter(this, R.layout.row, cursor, columns, to);
 
 		// set this adapter as your ListActivity's adapter
 		this.setListAdapter(mAdapter);
@@ -53,8 +52,8 @@ public class Main extends ListActivity {
 
 			@Override
 			public void onClick(View arg0) {
-				Intent intent = new Intent(Main.this, Form.class);
-				intent.putExtra(NoteEntry.MODE, NoteEntry.NEW);
+				Intent intent = new Intent(ScheduleListActivity.this, Form.class);
+				intent.putExtra(ScheduleEntry.MODE, ScheduleEntry.NEW);
 				startActivity(intent);
 			}
 		});
@@ -62,6 +61,7 @@ public class Main extends ListActivity {
 		this.getListView().setLongClickable(true);
 		this.getListView().setOnItemLongClickListener(
 				new OnItemLongClickListener() {
+					@SuppressLint("NewApi")
 					public boolean onItemLongClick(AdapterView<?> parent,
 							View v, int position, long id) {
 						SQLiteCursor data = (SQLiteCursor) mAdapter.getItem(position);
@@ -69,14 +69,14 @@ public class Main extends ListActivity {
 						data.moveToPosition(position);
 
 						long _id = cursor.getLong(cursor
-								.getColumnIndex(NoteEntry.COLUMN_NAME_ENTRY_ID));
+								.getColumnIndex(ScheduleEntry.COLUMN_NAME_ENTRY_ID));
 
-						helper.deleteNote(_id);
+						helper.deleteSchedule(_id);
 						
 						Cursor newCursor = helper.getAll();
 						mAdapter.swapCursor(newCursor);
 						
-						Main.this.setListAdapter(mAdapter);				
+						ScheduleListActivity.this.setListAdapter(mAdapter);				
 						mAdapter.notifyDataSetChanged();
 
 						return true;
@@ -93,18 +93,18 @@ public class Main extends ListActivity {
 
 		data.moveToPosition(position);
 		long _id = data.getLong(data
-				.getColumnIndex(NoteEntry.COLUMN_NAME_ENTRY_ID));
+				.getColumnIndex(ScheduleEntry.COLUMN_NAME_ENTRY_ID));
 		String title = data.getString(data
-				.getColumnIndex(NoteEntry.COLUMN_NAME_TITLE));
+				.getColumnIndex(ScheduleEntry.COLUMN_NAME_TITLE));
 		String text = data.getString(data
-				.getColumnIndex(NoteEntry.COLUMN_NAME_TEXT));
+				.getColumnIndex(ScheduleEntry.COLUMN_NAME_DESCRIPTION));
 
 		// pass the information to the display activity through bundle
-		Intent intent = new Intent(Main.this, Form.class);
-		intent.putExtra(NoteEntry.COLUMN_NAME_ENTRY_ID, _id);
-		intent.putExtra(NoteEntry.COLUMN_NAME_TITLE, title);
-		intent.putExtra(NoteEntry.COLUMN_NAME_TEXT, text);
-		intent.putExtra(NoteEntry.MODE, NoteEntry.EDIT);
+		Intent intent = new Intent(ScheduleListActivity.this, Form.class);
+		intent.putExtra(ScheduleEntry.COLUMN_NAME_ENTRY_ID, _id);
+		intent.putExtra(ScheduleEntry.COLUMN_NAME_TITLE, title);
+		intent.putExtra(ScheduleEntry.COLUMN_NAME_DESCRIPTION, text);
+		intent.putExtra(ScheduleEntry.MODE, ScheduleEntry.EDIT);
 		startActivity(intent);
 
 	}

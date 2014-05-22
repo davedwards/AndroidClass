@@ -1,5 +1,4 @@
 package com.android.mytodolist;
-import model.Note;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -10,54 +9,58 @@ import android.util.Log;
 public class DBHelper {
 
 	private static final String TEXT_TYPE = " TEXT";
+	private static final String INTEGER_TYPE = " INTEGER";
 	private static final String COMMA_SEP = ",";
 	private static final String SQL_CREATE_ENTRIES = "CREATE TABLE "
-			+ NoteEntry.TABLE_NAME + " (" + NoteEntry.COLUMN_NAME_ENTRY_ID
-			+ " INTEGER PRIMARY KEY," + NoteEntry.COLUMN_NAME_TITLE + TEXT_TYPE
-			+ COMMA_SEP + NoteEntry.COLUMN_NAME_TEXT + TEXT_TYPE
+			+ ScheduleEntry.TABLE_NAME + " (" + ScheduleEntry.COLUMN_NAME_ENTRY_ID
+			+ " INTEGER PRIMARY KEY," + ScheduleEntry.COLUMN_NAME_TITLE + TEXT_TYPE
+			+ COMMA_SEP + ScheduleEntry.COLUMN_NAME_DESCRIPTION + TEXT_TYPE
+			+ COMMA_SEP + ScheduleEntry.COLUMN_NAME_DATE + INTEGER_TYPE
 			+ " )";
 
 	private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
-			+ NoteEntry.TABLE_NAME;
+			+ ScheduleEntry.TABLE_NAME;
 
 	private Context context;
-	private NotesDBHelper mDbHelper;
+	private ScheduleDBHelper mDbHelper;
 	private SQLiteDatabase db;
 
 	public DBHelper(Context context) {
 		this.context = context;
-		mDbHelper = new NotesDBHelper(context);
+		mDbHelper = new ScheduleDBHelper(context);
 
 	}
 
-	public long insertNote(String title, String text) {
+	public long insertSchedule(String title, String description, int date) {
 		db = mDbHelper.getWritableDatabase();
 		ContentValues cv = new ContentValues();
-		cv.put(NoteEntry.COLUMN_NAME_TITLE, title);
-		cv.put(NoteEntry.COLUMN_NAME_TEXT, text);
+		cv.put(ScheduleEntry.COLUMN_NAME_TITLE, title);
+		cv.put(ScheduleEntry.COLUMN_NAME_DESCRIPTION, description);
+		cv.put(ScheduleEntry.COLUMN_NAME_DATE, date);
 
-		return db.insert(NoteEntry.TABLE_NAME, null, cv);
+		return db.insert(ScheduleEntry.TABLE_NAME, null, cv);
 	}
 	
-	public void updateNote(long id, String title, String text){
+	public void updateSchedule(long id, String title, String text, int date){
 		
 		db = mDbHelper.getWritableDatabase();
 		ContentValues cv = new ContentValues();
-		cv.put(NoteEntry.COLUMN_NAME_TITLE, title);
-		cv.put(NoteEntry.COLUMN_NAME_TEXT, text);
+		cv.put(ScheduleEntry.COLUMN_NAME_TITLE, title);
+		cv.put(ScheduleEntry.COLUMN_NAME_DESCRIPTION, text);
+		cv.put(ScheduleEntry.COLUMN_NAME_DATE, date);
 		String[] args = {String.valueOf(id)};
 
-		db.update(NoteEntry.TABLE_NAME, cv, "_id=?", args);
+		db.update(ScheduleEntry.TABLE_NAME, cv, "_id=?", args);
 	}
 	
-	public void deleteNote(long id){
+	public void deleteSchedule(long id){
 		
 		String[] args = {String.valueOf(id)};
-		db.delete(NoteEntry.TABLE_NAME,"_id=?", args);
+		db.delete(ScheduleEntry.TABLE_NAME,"_id=?", args);
 		
 	}
 
-	public Note getSingleNote(long id) {
+	public Schedule getSingleNote(long id) {
 
 		db = mDbHelper.getReadableDatabase();
 
@@ -67,9 +70,9 @@ public class DBHelper {
 
 		String[] args = { String.valueOf(id) };
 
-		Cursor c = db.query(NoteEntry.TABLE_NAME, // The table to query
+		Cursor c = db.query(ScheduleEntry.TABLE_NAME, // The table to query
 				projection, // The columns to return
-				"where " + NoteEntry.COLUMN_NAME_ENTRY_ID + "=?", // The columns
+				"where " + ScheduleEntry.COLUMN_NAME_ENTRY_ID + "=?", // The columns
 																	// for the
 																	// WHERE
 																	// clause
@@ -81,9 +84,11 @@ public class DBHelper {
 
 		c.moveToFirst();
 		String title = c.getString(c
-				.getColumnIndex(NoteEntry.COLUMN_NAME_TITLE));
-		String text = c.getString(c.getColumnIndex(NoteEntry.COLUMN_NAME_TEXT));
-		Note result = new Note(id, title, text);
+				.getColumnIndex(ScheduleEntry.COLUMN_NAME_TITLE));
+		String description = c.getString(c.getColumnIndex(ScheduleEntry.COLUMN_NAME_DESCRIPTION));
+		String date = c.getString(c.getColumnIndex(ScheduleEntry.COLUMN_NAME_DATE));
+		
+		Schedule result = new Schedule(id, title, description, date);
 		return result;
 	}
 
@@ -93,10 +98,10 @@ public class DBHelper {
 
 		// Define a projection that specifies which columns from the database
 		// you will actually use after this query.
-		String[] projection = { NoteEntry.COLUMN_NAME_ENTRY_ID, NoteEntry.COLUMN_NAME_TITLE,
-				NoteEntry.COLUMN_NAME_TEXT };
+		String[] projection = { ScheduleEntry.COLUMN_NAME_ENTRY_ID, ScheduleEntry.COLUMN_NAME_TITLE,
+				ScheduleEntry.COLUMN_NAME_DESCRIPTION };
 
-		Cursor c = db.query(NoteEntry.TABLE_NAME, // The table to query
+		Cursor c = db.query(ScheduleEntry.TABLE_NAME, // The table to query
 				projection, // The columns to return
 				null, // The columns for the WHERE clause
 				null, // The values for the WHERE clause
@@ -114,11 +119,11 @@ public class DBHelper {
 		}
 	}
 
-	public class NotesDBHelper extends SQLiteOpenHelper {
+	public class ScheduleDBHelper extends SQLiteOpenHelper {
 		public static final int DATABASE_VERSION = 1;
-		public static final String DATABASE_NAME = "Notes.db";
+		public static final String DATABASE_NAME = "Schedule.db";
 
-		public NotesDBHelper(Context context) {
+		public ScheduleDBHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
 
 		}
