@@ -1,4 +1,0 @@
-AndroidClass
-============
-
-Android Project
