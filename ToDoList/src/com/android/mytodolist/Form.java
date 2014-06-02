@@ -16,8 +16,8 @@ import com.android.todolist.R;
 public class Form extends Activity {
 	private EditText title;
 	private EditText description;
-	private TextView dateText;
-	private TextView timeText;
+//	private TextView dateText;
+//	private TextView timeText;
 	private Button enter;
 	private DBHelper helper;
 	private DatePicker date;
@@ -33,9 +33,9 @@ public class Form extends Activity {
 		enter = (Button) findViewById(R.id.save);
 		title = (EditText) findViewById(R.id.title);
 		description = (EditText) findViewById(R.id.description);
-		dateText = (TextView) findViewById(R.id.dateText);
+//		dateText = (TextView) findViewById(R.id.dateText);
 		date = (DatePicker) findViewById(R.id.calendar);
-		timeText = (TextView) findViewById(R.id.timeText);
+//		timeText = (TextView) findViewById(R.id.timeText);
 		time = (TimePicker) findViewById(R.id.timePick);
 		time.setIs24HourView(false);
 
@@ -49,17 +49,17 @@ public class Form extends Activity {
 						.getString(ScheduleEntry.COLUMN_NAME_TITLE);
 				String descriptionString = extras
 						.getString(ScheduleEntry.COLUMN_NAME_DESCRIPTION);
-				String dateString = extras
-						.getString(ScheduleEntry.COLUMN_NAME_DATE);
-				String timeString = extras
-						.getString(ScheduleEntry.COLUMN_NAME_TIME);
+//				String dateString = extras
+//						.getString(ScheduleEntry.COLUMN_NAME_DATE);
+//				String timeString = extras
+//						.getString(ScheduleEntry.COLUMN_NAME_TIME);
 				
 				_id = extras.getLong(ScheduleEntry.COLUMN_NAME_ENTRY_ID);
 
 				title.setText(titleString);
 				description.setText(descriptionString);
-				dateText.setText(dateString);
-				timeText.setText(timeString);
+//				dateText.setText(dateString);
+//				timeText.setText(timeString);
 			}
 
 		}
