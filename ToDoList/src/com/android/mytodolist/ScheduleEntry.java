@@ -8,6 +8,7 @@ public class ScheduleEntry {
 	public static final String COLUMN_NAME_TITLE = "title";
 	public static final String COLUMN_NAME_DESCRIPTION = "description";
 	public static final String COLUMN_NAME_DATE = "date";
+	public static final String COLUMN_NAME_TIME = "time";
 	
 	//for flags between activities
 	public static final String MODE = "mode";

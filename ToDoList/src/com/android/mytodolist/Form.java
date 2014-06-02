@@ -1,10 +1,5 @@
 package com.android.mytodolist;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +9,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.android.todolist.R;
 
@@ -21,9 +17,11 @@ public class Form extends Activity {
 	private EditText title;
 	private EditText description;
 	private TextView dateText;
+	private TextView timeText;
 	private Button enter;
 	private DBHelper helper;
 	private DatePicker date;
+	private TimePicker time;
 	int mode = 0;
 	long _id = -1;
 
@@ -37,7 +35,9 @@ public class Form extends Activity {
 		description = (EditText) findViewById(R.id.description);
 		dateText = (TextView) findViewById(R.id.dateText);
 		date = (DatePicker) findViewById(R.id.calendar);
-		
+		timeText = (TextView) findViewById(R.id.timeText);
+		time = (TimePicker) findViewById(R.id.timePick);
+		time.setIs24HourView(false);
 
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
@@ -49,18 +49,17 @@ public class Form extends Activity {
 						.getString(ScheduleEntry.COLUMN_NAME_TITLE);
 				String descriptionString = extras
 						.getString(ScheduleEntry.COLUMN_NAME_DESCRIPTION);
-				
-				int getDateInt = extras.getInt(ScheduleEntry.COLUMN_NAME_DATE);
-				long getDateLong = getDateInt * 1000;
-				Date getDateValue = new Date(getDateLong);
-				SimpleDateFormat format = new SimpleDateFormat("MMM-dd-yyyy");
-				String getDateString = format.format(getDateValue);
+				String dateString = extras
+						.getString(ScheduleEntry.COLUMN_NAME_DATE);
+				String timeString = extras
+						.getString(ScheduleEntry.COLUMN_NAME_TIME);
 				
 				_id = extras.getLong(ScheduleEntry.COLUMN_NAME_ENTRY_ID);
 
 				title.setText(titleString);
 				description.setText(descriptionString);
-				dateText.setText(getDateString);
+				dateText.setText(dateString);
+				timeText.setText(timeString);
 			}
 
 		}
@@ -74,13 +73,33 @@ public class Form extends Activity {
 				// get information from form
 				String ttl = title.getEditableText().toString();
 				String des = description.getEditableText().toString();
-				long dateValueLong = dateToCal(date).getTimeInMillis();
-				int dataValueInt = (int)dateValueLong;
+				
+				int getYear = date.getYear();
+				int getMonth = date.getMonth();
+				int getDay = date.getDayOfMonth();
+				
+				int getHour = time.getCurrentHour();
+				int getMinutes = time.getCurrentMinute();
+				int dbHour = getHour % 12;
+				String ampm;
+				
+				if(dbHour == 0) {
+					dbHour = 12;
+				}
+				
+				if(getHour > 11){
+					ampm = "PM";
+				} else {
+					ampm = "AM";
+				}
+				
+				String dateValue = getYear + "-" + getMonth + "-" + getDay;
+				String timeValue = dbHour + ":" + getMinutes + " " + ampm;
 				
 				if(mode == ScheduleEntry.EDIT){
-					helper.updateSchedule(_id, ttl, des, dataValueInt);
+					helper.updateSchedule(_id, ttl, des, dateValue, timeValue);
 				}else{
-					helper.insertSchedule(ttl, des, dataValueInt);
+					helper.insertSchedule(ttl, des, dateValue, timeValue);
 
 				}	
 				
@@ -97,13 +116,13 @@ public class Form extends Activity {
 		helper.close();
 	}
 	
-	private Calendar dateToCal(DatePicker dp){
-		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-		cal.set(Calendar.YEAR, dp.getYear());
-		cal.set(Calendar.MONTH, dp.getMonth());
-		cal.set(Calendar.DAY_OF_MONTH, dp.getDayOfMonth());
-		
-		return cal;
-	}
+//	private Calendar dateToCal(DatePicker dp){
+//		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+//		cal.set(Calendar.YEAR, dp.getYear());
+//		cal.set(Calendar.MONTH, dp.getMonth());
+//		cal.set(Calendar.DAY_OF_MONTH, dp.getDayOfMonth());
+//		
+//		return cal;
+//	}
 
 }

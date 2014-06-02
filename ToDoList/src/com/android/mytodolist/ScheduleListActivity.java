@@ -13,6 +13,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+
 import com.android.todolist.R;
 
 public class ScheduleListActivity extends ListActivity {
@@ -35,9 +36,10 @@ public class ScheduleListActivity extends ListActivity {
 
 		// the desired columns to be bound
 		columns = new String[] { ScheduleEntry.COLUMN_NAME_ENTRY_ID,
-				ScheduleEntry.COLUMN_NAME_TITLE };
+				ScheduleEntry.COLUMN_NAME_TITLE, ScheduleEntry.COLUMN_NAME_DESCRIPTION,
+				ScheduleEntry.COLUMN_NAME_DATE, ScheduleEntry.COLUMN_NAME_TIME };
 		// the XML defined views which the data will be bound to
-		to = new int[] { R.id.id, R.id.title, R.id.description, R.id.dateText };
+		to = new int[] { R.id.id, R.id.title, R.id.description, R.id.dateText, R.id.timeText };
 
 		// create the adapter using the cursor pointing to the desired data as
 		// well as the layout information
@@ -96,14 +98,20 @@ public class ScheduleListActivity extends ListActivity {
 				.getColumnIndex(ScheduleEntry.COLUMN_NAME_ENTRY_ID));
 		String title = data.getString(data
 				.getColumnIndex(ScheduleEntry.COLUMN_NAME_TITLE));
-		String text = data.getString(data
+		String description = data.getString(data
 				.getColumnIndex(ScheduleEntry.COLUMN_NAME_DESCRIPTION));
+		String date = data.getString(data
+				.getColumnIndex(ScheduleEntry.COLUMN_NAME_DATE));
+		String time = data.getString(data
+				.getColumnIndex(ScheduleEntry.COLUMN_NAME_TIME));
 
 		// pass the information to the display activity through bundle
 		Intent intent = new Intent(ScheduleListActivity.this, Form.class);
 		intent.putExtra(ScheduleEntry.COLUMN_NAME_ENTRY_ID, _id);
 		intent.putExtra(ScheduleEntry.COLUMN_NAME_TITLE, title);
-		intent.putExtra(ScheduleEntry.COLUMN_NAME_DESCRIPTION, text);
+		intent.putExtra(ScheduleEntry.COLUMN_NAME_DESCRIPTION, description);
+		intent.putExtra(ScheduleEntry.COLUMN_NAME_DATE, date);
+		intent.putExtra(ScheduleEntry.COLUMN_NAME_TIME, time);
 		intent.putExtra(ScheduleEntry.MODE, ScheduleEntry.EDIT);
 		startActivity(intent);
 

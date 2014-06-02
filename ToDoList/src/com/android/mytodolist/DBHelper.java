@@ -9,13 +9,13 @@ import android.util.Log;
 public class DBHelper {
 
 	private static final String TEXT_TYPE = " TEXT";
-	private static final String INTEGER_TYPE = " INTEGER";
 	private static final String COMMA_SEP = ",";
 	private static final String SQL_CREATE_ENTRIES = "CREATE TABLE "
 			+ ScheduleEntry.TABLE_NAME + " (" + ScheduleEntry.COLUMN_NAME_ENTRY_ID
 			+ " INTEGER PRIMARY KEY," + ScheduleEntry.COLUMN_NAME_TITLE + TEXT_TYPE
 			+ COMMA_SEP + ScheduleEntry.COLUMN_NAME_DESCRIPTION + TEXT_TYPE
-			+ COMMA_SEP + ScheduleEntry.COLUMN_NAME_DATE + INTEGER_TYPE
+			+ COMMA_SEP + ScheduleEntry.COLUMN_NAME_DATE + TEXT_TYPE
+			+ COMMA_SEP + ScheduleEntry.COLUMN_NAME_TIME + TEXT_TYPE
 			+ " )";
 
 	private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
@@ -31,23 +31,25 @@ public class DBHelper {
 
 	}
 
-	public long insertSchedule(String title, String description, int date) {
+	public long insertSchedule(String title, String description, String date, String time) {
 		db = mDbHelper.getWritableDatabase();
 		ContentValues cv = new ContentValues();
 		cv.put(ScheduleEntry.COLUMN_NAME_TITLE, title);
 		cv.put(ScheduleEntry.COLUMN_NAME_DESCRIPTION, description);
 		cv.put(ScheduleEntry.COLUMN_NAME_DATE, date);
+		cv.put(ScheduleEntry.COLUMN_NAME_TIME, time);
 
 		return db.insert(ScheduleEntry.TABLE_NAME, null, cv);
 	}
 	
-	public void updateSchedule(long id, String title, String text, int date){
+	public void updateSchedule(long id, String title, String text, String date, String time){
 		
 		db = mDbHelper.getWritableDatabase();
 		ContentValues cv = new ContentValues();
 		cv.put(ScheduleEntry.COLUMN_NAME_TITLE, title);
 		cv.put(ScheduleEntry.COLUMN_NAME_DESCRIPTION, text);
 		cv.put(ScheduleEntry.COLUMN_NAME_DATE, date);
+		cv.put(ScheduleEntry.COLUMN_NAME_TIME, time);
 		String[] args = {String.valueOf(id)};
 
 		db.update(ScheduleEntry.TABLE_NAME, cv, "_id=?", args);
@@ -87,8 +89,9 @@ public class DBHelper {
 				.getColumnIndex(ScheduleEntry.COLUMN_NAME_TITLE));
 		String description = c.getString(c.getColumnIndex(ScheduleEntry.COLUMN_NAME_DESCRIPTION));
 		String date = c.getString(c.getColumnIndex(ScheduleEntry.COLUMN_NAME_DATE));
+		String time = c.getString(c.getColumnIndex(ScheduleEntry.COLUMN_NAME_TIME));
 		
-		Schedule result = new Schedule(id, title, description, date);
+		Schedule result = new Schedule(id, title, description, date, time);
 		return result;
 	}
 
@@ -99,7 +102,8 @@ public class DBHelper {
 		// Define a projection that specifies which columns from the database
 		// you will actually use after this query.
 		String[] projection = { ScheduleEntry.COLUMN_NAME_ENTRY_ID, ScheduleEntry.COLUMN_NAME_TITLE,
-				ScheduleEntry.COLUMN_NAME_DESCRIPTION };
+				ScheduleEntry.COLUMN_NAME_DESCRIPTION, ScheduleEntry.COLUMN_NAME_DATE, 
+				ScheduleEntry.COLUMN_NAME_TIME };
 
 		Cursor c = db.query(ScheduleEntry.TABLE_NAME, // The table to query
 				projection, // The columns to return
